@@ -1,11 +1,11 @@
-from django.shortcuts import render
-from rest_framework import viewsets, views, status
-from django.shortcuts import get_object_or_404
-from rest_framework.response import Response
 from django.http import JsonResponse
-from rest_framework.decorators import api_view, action
-from .serializers import BurgerSerializer, IngredientSerializer
+from django.shortcuts import get_object_or_404, render
+from rest_framework import status, views, viewsets
+from rest_framework.decorators import action, api_view
+from rest_framework.response import Response
+
 from .models import Burger, Ingredient
+from .serializers import BurgerSerializer, IngredientSerializer
 
 
 class BurgerViewSet(viewsets.ModelViewSet):
@@ -21,10 +21,10 @@ class BurgerViewSet(viewsets.ModelViewSet):
           'body': serializer.data}, status=status.HTTP_200_OK)
 
     except Burger.DoesNotExist:
-      return Response({'status': 404, 'message': 'hamburguesa inexistente'})
+      return Response({'status': 404, 'message': 'hamburguesa inexistente'}, status=status.HTTP_404_NOT_FOUND)
 
     except ValueError:
-      return Response({'status':400, 'message':'id invalido'})
+      return Response({'status':400, 'message':'id invalido'}, status=status.HTTP_400_BAD_REQUEST)
     
 
   def create(self, request):
@@ -38,7 +38,7 @@ class BurgerViewSet(viewsets.ModelViewSet):
         'body': serializer.data}, status=status.HTTP_201_CREATED, headers=headers)
 
     except: 
-      return Response({'status': 400, 'message': 'input invalido'})
+      return Response({'status': 400, 'message': 'input invalido'}, status=status.HTTP_400_BAD_REQUEST)
 
 
   def destroy(self, request, *args, **kwargs):
@@ -46,26 +46,26 @@ class BurgerViewSet(viewsets.ModelViewSet):
     try:
       burger = Burger.objects.get(id=(int(kwargs['pk'])))
       burger.delete()
-      return Response({'status': 200, 'message': 'hamburguesa eliminada'})
+      return Response({'status': 200, 'message': 'hamburguesa eliminada'}, status=status.HTTP_200_OK)
 
     except Burger.DoesNotExist:
-      return Response({'status': 404, 'message': 'hamburguesa inexistente'})
+      return Response({'status': 404, 'message': 'hamburguesa inexistente'}, status=status.HTTP_404_NOT_FOUND)
 
 
   def update(self, request, *args, **kwargs):
     # path hamburguesa/pk
     if 'id' in request.data.keys() or 'ingredientes' in request.data.keys():
-      return Response({'status': 400, 'message': 'parámetros invalidos'})
+      return Response({'status': 400, 'message': 'parámetros invalidos'}, status=status.HTTP_400_BAD_REQUEST)
     
     try:
       burger = Burger.objects.get(id=(int(kwargs['pk'])))
       serializer = self.get_serializer(burger, data=request.data, partial=True)
       serializer.is_valid(raise_exception=True)
       serializer.save()
-      return Response({'status': 200, 'message': 'operación exitosa', 'body': serializer.data})
+      return Response({'status': 200, 'message': 'operación exitosa', 'body': serializer.data}, status=status.HTTP_200_OK)
     
     except Burger.DoesNotExist:
-      return Response({'status': 404, 'message': 'hamburguesa inexistente'})
+      return Response({'status': 404, 'message': 'hamburguesa inexistente'}, status=status.HTTP_404_NOT_FOUND)
 
 
   @action(methods=['PUT'], detail=True)
@@ -76,15 +76,15 @@ class BurgerViewSet(viewsets.ModelViewSet):
       ingredient = Ingredient.objects.get(id=(int(kwargs['id'])))
 
     except Burger.DoesNotExist:
-      return Response({'status': 400, 'message': 'id de hamburguesa inválido'})
+      return Response({'status': 400, 'message': 'id de hamburguesa inválido'}, status=status.HTTP_400_BAD_REQUEST)
     
     except Ingredient.DoesNotExist: 
-      return Response({'status': 404, 'message': 'ingrediente inexistente'})
+      return Response({'status': 404, 'message': 'ingrediente inexistente'}, status=status.HTTP_404_NOT_FOUND)
     
     if request.method == 'PUT':
       burger.ingredientes.add(ingredient)
       serializer = BurgerSerializer
-      return Response({'status': 201, 'message': 'ingrediente agregado'})
+      return Response({'status': 201, 'message': 'ingrediente agregado'}, status=status.HTTP_201_CREATED)
 
 
   @action(methods=['DELETE'], detail=True)
@@ -95,14 +95,14 @@ class BurgerViewSet(viewsets.ModelViewSet):
       ingredient = burger.ingredientes.get(id=(int(kwargs['id'])))
 
     except Burger.DoesNotExist:
-      return Response({'status': 400, 'message': 'id de hamburguesa inválido'})
+      return Response({'status': 400, 'message': 'id de hamburguesa inválido'}, status=status.HTTP_400_BAD_REQUEST)
     
     except Ingredient.DoesNotExist:
-      return Response({'status': 404, 'message': 'ingrediente inexistente en la hamburguesa'})
+      return Response({'status': 404, 'message': 'ingrediente inexistente en la hamburguesa'}, status=status.HTTP_404_NOT_FOUND)
     
     if request.method == 'DELETE':
       burger.ingredientes.remove(ingredient)
-      return Response({'status': 200, 'message': 'ingrediente retirado'})
+      return Response({'status': 200, 'message': 'ingrediente retirado'}, status=status.HTTP_200_OK)
       
 
 class IngredientViewSet(viewsets.ModelViewSet):
@@ -120,7 +120,7 @@ class IngredientViewSet(viewsets.ModelViewSet):
           'body': serializer.data}, status=status.HTTP_201_CREATED, headers=headers)
 
       except: 
-        return Response({'status': 400, 'message': 'input invalido'})
+        return Response({'status': 400, 'message': 'input invalido'}, status=status.HTTP_400_BAD_REQUEST)
     
 
     def retrieve(self, request, *args, **kwargs):
@@ -132,10 +132,10 @@ class IngredientViewSet(viewsets.ModelViewSet):
             'body': serializer.data}, status=status.HTTP_200_OK)
 
       except Ingredient.DoesNotExist:
-        return Response({'status': 404, 'message': 'ingrediente inexistente'})
+        return Response({'status': 404, 'message': 'ingrediente inexistente'}, status=status.HTTP_404_NOT_FOUND)
 
       except ValueError:
-        return Response({'status':400, 'message':'id invalido'})
+        return Response({'status':400, 'message':'id invalido'}, status=status.HTTP_400_BAD_REQUEST)
     
 
     def destroy(self, request, *args, **kwargs):
@@ -145,10 +145,10 @@ class IngredientViewSet(viewsets.ModelViewSet):
 
         if Burger.objects.filter(ingredientes__id=(int(kwargs['pk']))).exists():
           return Response({'status': 409,
-            'message':'ingrediente no se puede borrar, se encuentra presente en una hamburguesa'})
+            'message':'ingrediente no se puede borrar, se encuentra presente en una hamburguesa'}, status=status.HTTP_409_CONFLICT)
         else:
           ingredient.delete()
-          return Response({'status': 200, 'message': 'ingrediente eliminado'})
+          return Response({'status': 200, 'message': 'ingrediente eliminado'}, status=status.HTTP_200_OK)
 
       except Ingredient.DoesNotExist:
-        return Response({'status': 404, 'message': 'ingrediente inexistente'})
+        return Response({'status': 404, 'message': 'ingrediente inexistente'}, status=status.HTTP_404_NOT_FOUND)
