@@ -71,6 +71,10 @@ class BurgerViewSet(viewsets.ModelViewSet):
   @action(methods=['PUT'], detail=True)
   def add_ingredient(self, request, *args, **kwargs):
     # put hamburguesa/pk/ingrediente/id
+    id_burger = kwargs['pk']
+    id_ing = kwargs['id']
+    if not id_burger.isnumeric() or not id_ing.isnumeric():
+      return Response({'status': 400, 'message': 'id invalido'}, status=status.HTTP_400_BAD_REQUEST)
     try: 
       burger = Burger.objects.get(id=(int(kwargs['pk'])))
       ingredient = Ingredient.objects.get(id=(int(kwargs['id'])))
@@ -90,6 +94,10 @@ class BurgerViewSet(viewsets.ModelViewSet):
   @action(methods=['DELETE'], detail=True)
   def delete_ingredient(self, request, *args, **kwargs):
     # delete hamburguesa/pk/ingrediente/id
+    id_burger = kwargs['pk']
+    id_ing = kwargs['id']
+    if not id_burger.isnumeric() or not id_ing.isnumeric():
+      return Response({'status': 400, 'message': 'id invalido'}, status=status.HTTP_400_BAD_REQUEST)
     try: 
       burger = Burger.objects.get(id=(int(kwargs['pk'])))
       ingredient = burger.ingredientes.get(id=(int(kwargs['id'])))
