@@ -142,7 +142,7 @@ class IngredientViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
       except: 
         return Response({'status': 400, 'message': 'input invalido'}, status=status.HTTP_400_BAD_REQUEST)
