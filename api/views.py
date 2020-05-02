@@ -17,8 +17,7 @@ class BurgerViewSet(viewsets.ModelViewSet):
     try:
       burger = Burger.objects.get(id=(int(kwargs['pk'])))
       serializer = self.get_serializer(burger)
-      return Response({'status':200, 'message': 'operación exitosa',
-          'body': serializer.data}, status=status.HTTP_200_OK)
+      return Response(serializer.data, status=status.HTTP_200_OK)
 
     except Burger.DoesNotExist:
       return Response({'status': 404, 'message': 'hamburguesa inexistente'}, status=status.HTTP_404_NOT_FOUND)
@@ -34,8 +33,7 @@ class BurgerViewSet(viewsets.ModelViewSet):
       serializer.is_valid(raise_exception=True)
       serializer.save()
       headers = self.get_success_headers(serializer.data)
-      return Response({'status':201, 'message': 'hamburguesa creada',
-        'body': serializer.data}, status=status.HTTP_201_CREATED, headers=headers)
+      return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     except: 
       return Response({'status': 400, 'message': 'input invalido'}, status=status.HTTP_400_BAD_REQUEST)
@@ -62,7 +60,7 @@ class BurgerViewSet(viewsets.ModelViewSet):
       serializer = self.get_serializer(burger, data=request.data, partial=True)
       serializer.is_valid(raise_exception=True)
       serializer.save()
-      return Response({'status': 200, 'message': 'operación exitosa', 'body': serializer.data}, status=status.HTTP_200_OK)
+      return Response(serializer.data, status=status.HTTP_200_OK)
     
     except Burger.DoesNotExist:
       return Response({'status': 404, 'message': 'hamburguesa inexistente'}, status=status.HTTP_404_NOT_FOUND)
@@ -124,8 +122,7 @@ class IngredientViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         headers = self.get_success_headers(serializer.data)
-        return Response({'status':201, 'message': 'ingrediente creado',
-          'body': serializer.data}, status=status.HTTP_201_CREATED, headers=headers)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
       except: 
         return Response({'status': 400, 'message': 'input invalido'}, status=status.HTTP_400_BAD_REQUEST)
@@ -136,8 +133,7 @@ class IngredientViewSet(viewsets.ModelViewSet):
       try:
         ingredient = Ingredient.objects.get(id=(int(kwargs['pk'])))
         serializer = self.get_serializer(ingredient)
-        return Response({'status':200, 'message': 'operación exitosa',
-            'body': serializer.data}, status=status.HTTP_200_OK)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
       except Ingredient.DoesNotExist:
         return Response({'status': 404, 'message': 'ingrediente inexistente'}, status=status.HTTP_404_NOT_FOUND)
