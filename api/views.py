@@ -12,6 +12,16 @@ class BurgerViewSet(viewsets.ModelViewSet):
   queryset = Burger.objects.all()
   serializer_class = BurgerSerializer
 
+  def list(self, request, *args, **kwargs):
+    queryset = self.filter_queryset(self.get_queryset())
+    page = self.paginate_queryset(queryset)
+    if page is not None:
+        serializer = self.get_serializer(page, many=True)
+        return self.get_paginated_response(serializer.data)
+
+    serializer = self.get_serializer(queryset, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
   def retrieve(self, request, *args, **kwargs):
     # get hamburguesa/pk
     try:
@@ -114,6 +124,16 @@ class BurgerViewSet(viewsets.ModelViewSet):
 class IngredientViewSet(viewsets.ModelViewSet):
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
+    
+    def list(self, request, *args, **kwargs):
+      queryset = self.filter_queryset(self.get_queryset())
+      page = self.paginate_queryset(queryset)
+      if page is not None:
+          serializer = self.get_serializer(page, many=True)
+          return self.get_paginated_response(serializer.data)
+
+      serializer = self.get_serializer(queryset, many=True)
+      return Response(serializer.data, status=status.HTTP_200_OK)
     
     def create(self, request):
     # post ingrediente 
