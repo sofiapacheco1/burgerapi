@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from .models import Burger, Ingredient
 
-url = 'https://burgerawesomeapi.herokuapp.com'
+url = 'https://burgerawesomeapi.herokuapp.com/'
 
 """
 [
